@@ -8,3 +8,7 @@ panic = "abort"
 
 [profile.release]
 panic = "abort"
+
+[dev-dependencies]
+cargo-binutils = "0.3.6"
+rustfilt = "0.2.1"
