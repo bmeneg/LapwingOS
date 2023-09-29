@@ -1,6 +1,7 @@
 #![no_main]
 #![no_std]
 
+use core::arch::global_asm;
 use core::panic::PanicInfo;
 
 #[panic_handler]
@@ -8,7 +9,5 @@ fn panic(_info: &PanicInfo) -> ! {
 	loop {}
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-	loop {}
-}
+// Assembly counterpart to this file.
+global_asm!(include_str!("arch/aarch64/boot.s"));
