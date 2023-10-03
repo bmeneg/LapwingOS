@@ -1,7 +1,3 @@
-# SPDX-License-Identifier: BSD-3-Clause
-#
-# Copyright (c) 2023 Bruno Meneguele <bmeneg@heredoc.io>
-
 # We only support RPI4, so fill all vars considering it
 BSP = rpi4
 BUILD_TARGET = aarch64-unknown-none-softfloat
@@ -56,7 +52,7 @@ $(KERNEL_BINARY): $(KERNEL_ELF)
 
 objdump: $(KERNEL_ELF)
 	@echo "Launching Rust's objdump ..."
-	@$(OBJDUMP) -- --disassemble --demangle --section .text $(KERNEL_ELF) $(RUSTFILT)
+	@$(OBJDUMP) -- --disassemble --demangle --section .text $(RUSTFILT)
 
 qemu: $(KERNEL_BINARY)
 	@echo "Launching QEMU ..."
