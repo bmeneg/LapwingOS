@@ -10,4 +10,4 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 
 // Assembly counterpart to this file.
-global_asm!(include_str!("arch/aarch64/boot.s"));
+global_asm!(include_str!("arch/boot.s"));

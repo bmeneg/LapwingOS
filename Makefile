@@ -10,7 +10,7 @@ TARGET_PATH = debug
 endif
 
 # Files to the end result
-LD_SCRIPT_PATH = $(shell pwd)/src/bsp/rpi4
+LD_SCRIPT_PATH = $(shell pwd)/src/bsp
 KERNEL_NAME = lapwing
 KERNEL_LD_SCRIPT = kernel.ld
 KERNEL_ELF = target/$(BUILD_TARGET)/$(TARGET_PATH)/$(KERNEL_NAME)
