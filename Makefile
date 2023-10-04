@@ -30,13 +30,14 @@ RUSTCFLAGS = \
 RUSTC = cargo rustc 
 OBJCOPY = cargo objcopy
 OBJDUMP = cargo objdump
+READOBJ = cargo readobj
 
 ifneq ($(shell which rustfilt),)
 RUSTFILT = | rustfilt
 endif
 
 # Time for the targets
-.PHONY: all qemu objdump clean
+.PHONY: all qemu objdump readobj clean
 
 all: $(KERNEL_BINARY)
 
@@ -53,6 +54,10 @@ $(KERNEL_BINARY): $(KERNEL_ELF)
 objdump: $(KERNEL_ELF)
 	@echo "Launching Rust's objdump ..."
 	@$(OBJDUMP) -- --disassemble --demangle --section .text $(RUSTFILT)
+
+readobj: $(KERNEL_ELF)
+	@echo "Launching Rust's readobj ..."
+	@$(READOBJ) --bin $(KERNEL_NAME) -- --all
 
 qemu: $(KERNEL_BINARY)
 	@echo "Launching QEMU ..."
