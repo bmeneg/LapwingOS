@@ -1,2 +1,7 @@
 [build]
 target = "aarch64-unknown-none-softfloat"
+rustflags = [
+   "-C", "target-cpu=cortex-a72",
+   "-C", "link-arg=--library-path=src/bsp",
+   "-C", "link-arg=--script=kernel.ld"
+]
