@@ -9,5 +9,10 @@ fn panic(_info: &PanicInfo) -> ! {
 	loop {}
 }
 
-// Assembly counterpart to this file.
+// Assembly file with CPU boot code.
 global_asm!(include_str!("arch/boot.s"));
+
+#[no_mangle]
+pub fn _start_kernel() -> ! {
+	loop {}
+}

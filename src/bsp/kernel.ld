@@ -1,3 +1,7 @@
+/* Output format for what we're planning to use as target: only
+ * little-endian AArch64 */
+OUTPUT_FORMAT("elf64-littleaarch64", "elf64-littleaarch64", "elf64-littleaarch64")
+
 /* The RPi4B firmware requires one of the following physical addrs for the
  * kernel image:
  *
@@ -21,20 +25,58 @@ ENTRY(kernel_load_addr)
  * PF_W = 2
  * PF_R = 4
  *
- * PF_R + PF_X = 5 <--- what we want to set
+ * For code segment:
+ * PF_R + PF_X = 5
+ * For data segment:
+ * PF_R + PF_W = 6
  *
  * Source: https://refspecs.linuxfoundation.org/elf/elf.pdf
  */
 PHDRS
 {
-    code_phdr PT_LOAD FLAGS(5);
+	segment_code PT_LOAD FLAGS(5);
+	segment_data PT_LOAD FLAGS(6);
 }
 
 SECTIONS
 {
-    . = kernel_load_addr;
-    .text :
-    {
-        KEEP(*(.text._start))
-    } :code_phdr
+	/* AArch64 stack pointers are 128 bits aligned */
+	.kernel_stack (NOLOAD) : ALIGN(16)
+	{
+		. += kernel_load_addr;
+		/* Stack grows backwards, towards the beginning of RAM (0x00) */
+		__kernel_stack_start = .;
+	} :segment_data
+
+	/* Code segment to hold actual kernel code */
+	.text :
+	{
+		KEEP(*(.text._start));
+		*(.text .text.*);
+	} :segment_code
+	/* Read-only data used in the kernel code */
+	.rodata : {
+		*(.rodata .rodata.*);
+	} :segment_code
+
+	/* Data segment used for heap and stack */
+	.data : {
+		*(.data .data.*)
+	} :segment_data
+	/* Data segment used for unitialized data (constants and static
+	 * variables) that must be =0 at run time */
+	.bss (NOLOAD) : ALIGN(16) {
+		__bss_start = .;
+		*(.bss .bss.*)
+		*(COMMON)
+		__bss_end = .;
+	} :segment_data
+
+	/* We don't care about these optional sections for now */
+	/DISCARD/ : {
+		*(.comment);
+		*(.gnu*);
+		*(.note*);
+		*(.eh_frame*);
+	}
 }
