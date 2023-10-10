@@ -5,3 +5,6 @@ rustflags = [
    "-C", "link-arg=--library-path=src/bsp",
    "-C", "link-arg=--script=kernel.ld"
 ]
+
+[term]
+verbose = true

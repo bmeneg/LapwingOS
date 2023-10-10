@@ -2,6 +2,7 @@
 name = "lapwing"
 version = "0.1.0"
 edition = "2021"
+authors = ["Bruno Meneguele <bmeneg@heredoc.io>"]
 
 [profile.dev]
 panic = "abort"

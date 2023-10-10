@@ -6,7 +6,7 @@ use core::panic::PanicInfo;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-	loop {}
+    loop {}
 }
 
 // Assembly file with CPU boot code.
@@ -14,5 +14,5 @@ global_asm!(include_str!("arch/boot.s"));
 
 #[no_mangle]
 pub fn _start_kernel() -> ! {
-	loop {}
+    loop {}
 }
