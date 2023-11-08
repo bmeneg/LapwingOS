@@ -13,6 +13,10 @@ endif
 KERNEL_NAME = lapwing
 KERNEL_ELF = target/$(BUILD_TARGET)/$(TARGET_PATH)/$(KERNEL_NAME)
 KERNEL_BINARY = target/$(BUILD_TARGET)/$(TARGET_PATH)/$(KERNEL_NAME).bin
+KERNEL_LD_SCRIPT = src/bsp/kernel.ld
+# Export for build.rs be able to check for changes
+export LAPWING_LD_SCRIPT_PATH=$(KERNEL_LD_SCRIPT)
+BUILD_MARKER = target/$(BUILD_TARGET).build_marker
 
 # QEMU options for getting the kernel up and running
 QEMU = qemu-system-aarch64
@@ -23,7 +27,7 @@ QEMU_ARGS = $(QEMU_MACHINE_TYPE) -d in_asm -display none
 # NOTE: since we're using cargo-binutils crate, every `cargo <tool>` call will first execute `cargo build`, meaning we
 # need to place rust compiler flags into .cargo/config.toml to avoid multiple compilations (on every cargo call). Once
 # cargo realizes there is no incremental compilation to perform, it'll successfully finish the `build` step.
-RUSTC = cargo rustc 
+RUSTC = cargo rustc
 OBJCOPY = cargo objcopy
 OBJDUMP = cargo objdump
 READOBJ = cargo readobj
@@ -33,13 +37,15 @@ RUSTFILT = | rustfilt
 endif
 
 # Time for the targets
-.PHONY: all qemu objdump readobj clean
+# Adding $(KERNEL_ELF) as target is a hackish way of forcing `make all` into rustc re-linking step when kernel.ld is
+# updated.
+.PHONY: all qemu objdump readobj clean $(KERNEL_ELF)
 
 all: $(KERNEL_BINARY)
 
 $(KERNEL_ELF):
 	@echo "Compiling kernel ELF for $(BSP): $(KERNEL_ELF) ..."
-	$(RUSTC) --verbose
+	$(RUSTC) -vv
 	@echo "Done compilation"
 
 $(KERNEL_BINARY): $(KERNEL_ELF)
