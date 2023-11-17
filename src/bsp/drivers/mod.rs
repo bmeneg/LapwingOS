@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use crate::klib::sync::SingleThreadData;
+
 #[derive(Copy, Clone, PartialEq)]
 pub enum InitPhase {
     Hardware,
@@ -29,12 +31,19 @@ pub struct DriversManager {
     num_registered: usize,
 }
 
+static DRIVERS_MANAGER_ONCE: SingleThreadData<DriversManager> =
+    SingleThreadData::new(DriversManager::new());
+
 impl DriversManager {
-    fn new() -> Self {
+    const fn new() -> Self {
         Self {
             drivers: [None; NUM_DRIVERS],
             num_registered: 0,
         }
+    }
+
+    pub fn instance() -> &'static Self {
+        &DRIVERS_MANAGER_ONCE
     }
 
     pub fn register_driver(&mut self, driver: DeviceDriver) {

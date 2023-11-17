@@ -4,9 +4,9 @@
 #![feature(variant_count)]
 
 mod bsp;
+mod klib;
 
-use core::arch::global_asm;
-use core::panic::PanicInfo;
+use core::{arch::global_asm, panic::PanicInfo};
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
