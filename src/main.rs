@@ -1,5 +1,9 @@
 #![no_main]
 #![no_std]
+#![feature(core_intrinsics)]
+#![feature(variant_count)]
+
+mod bsp;
 
 use core::arch::global_asm;
 use core::panic::PanicInfo;
