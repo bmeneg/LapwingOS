@@ -1,7 +1,7 @@
 use std::env;
 
 // Check for other non-Rust files if they changed requiring a rebuild
-fn main() -> Result<(), std::io::Error>{
+fn main() -> Result<(), std::io::Error> {
     // We only care about kernel.ld for now. This env var used below is
     // directly exported from the Makefile.
     let env_var = "LAPWING_LD_SCRIPT_PATH";

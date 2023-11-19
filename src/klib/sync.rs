@@ -13,16 +13,14 @@ use core::ops::{Deref, DerefMut};
 
 pub struct SingleThreadData<T>
 where
-    T: ?Sized
+    T: ?Sized,
 {
     data: T,
 }
 
 impl<T> SingleThreadData<T> {
     pub const fn new(inner: T) -> Self {
-        Self {
-            data: inner,
-        }
+        Self { data: inner }
     }
 }
 
@@ -31,15 +29,15 @@ unsafe impl<T> Send for SingleThreadData<T> {}
 unsafe impl<T> Sync for SingleThreadData<T> {}
 
 // Get the inner data when deferring SingleThreadData
-impl<T> Deref for SingleThreadData<T>{
+impl<T> Deref for SingleThreadData<T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
-       &self.data
+        &self.data
     }
 }
 
-impl<T> DerefMut for SingleThreadData<T>{
+impl<T> DerefMut for SingleThreadData<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.data
     }
