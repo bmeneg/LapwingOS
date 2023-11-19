@@ -1,8 +1,12 @@
 #![no_main]
 #![no_std]
+#![feature(core_intrinsics)]
+#![feature(variant_count)]
 
-use core::arch::global_asm;
-use core::panic::PanicInfo;
+mod bsp;
+mod klib;
+
+use core::{arch::global_asm, panic::PanicInfo};
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
