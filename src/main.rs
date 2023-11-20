@@ -3,7 +3,6 @@
 #![feature(core_intrinsics)]
 #![feature(variant_count)]
 
-mod bsp;
 mod klib;
 
 use core::{arch::global_asm, panic::PanicInfo};
