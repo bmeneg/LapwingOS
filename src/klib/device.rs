@@ -42,8 +42,8 @@ impl DriversManager {
         }
     }
 
-    pub fn instance() -> &'static Self {
-        &DRIVERS_MANAGER_ONCE
+    pub fn instance() -> &'static mut Self {
+        DRIVERS_MANAGER_ONCE.inner()
     }
 
     pub fn register_driver(&mut self, driver: DeviceDriver) {
@@ -56,9 +56,9 @@ impl DriversManager {
     // within, thus instead of returning a boolean for each (or even a final
     // boolean for all) we panic!
     // At the same time, we allow initializing one init phase at a time.
-    pub fn init_drivers(&mut self, init_phase: Option<InitPhase>) {
+    pub fn init_drivers(&self, init_phase: Option<InitPhase>) {
         if init_phase.is_none() {
-            for driver in self.drivers {
+            for driver in &self.drivers {
                 // Just return in case there isn't any driver to be loaded
                 if let Some(drv) = driver {
                     match drv.descriptor.init() {
@@ -83,7 +83,7 @@ impl DriversManager {
         for (curr_phase, num_drivers) in phase_count.into_iter().enumerate() {
             if num_drivers > 0 {
                 self.drivers
-                    .iter_mut()
+                    .iter()
                     .filter(|drv| curr_phase == drv.unwrap().phase as usize)
                     .for_each(|drv| match drv.unwrap().descriptor.init() {
                         Ok(_) => (), // we still lack print macros
