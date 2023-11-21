@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use core::fmt;
+
 // Read and Write operations are abstracted by tock_registers, with that we
 // don't need to create additional abstraction for generic read() and
 // write() into ::mmio or other crate.
@@ -11,7 +13,7 @@ use tock_registers::{
 
 use crate::{
     bsp::{drivers::gpio, mmio},
-    klib::{device, sync},
+    klib::{console, device, sync},
 };
 
 register_bitfields! {
@@ -172,7 +174,27 @@ impl UART1 {
     }
 }
 
+// Implementing the fmt::Write::write_str function we automatically gain
+// access to both write_char() and write_fmt(). The later is required to
+// implement formatted printing macro.
+impl fmt::Write for UART1 {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        for c in s.chars() {
+            self.write_byte(c as u8);
+        }
+
+        Ok(())
+    }
+}
+
+impl console::Console for UART1 {
+    fn read_char(&self) -> u8 {
+        self.read_byte()
+    }
+}
+
 pub fn build() -> device::DeviceDriver {
+    console::register_console(UART1_DRIVER.inner());
     device::DeviceDriver {
         description: "BCM2711 MiniUART",
         descriptor: UART1_DRIVER.inner(),
