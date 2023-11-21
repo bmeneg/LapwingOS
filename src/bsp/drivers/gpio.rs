@@ -82,7 +82,7 @@ struct Registers {
 // directly create the field value.
 type GPIOFieldValue = FieldValue<u32, ()>;
 
-struct GPIO {
+pub struct GPIO {
     registers: mmio::MemMap<Registers>,
 }
 
@@ -115,8 +115,6 @@ impl device::DriverDescriptor for GPIO {
 // For easing our job we can make use of the tock_registers function
 // FieldValue::new with the bitmask macro. And for easing users life we
 // export two functions to work with these registers.
-static GPIO_DRIVER: sync::SafeStaticData<GPIO> = sync::SafeStaticData::new(GPIO::new());
-
 impl GPIO {
     pub const fn new() -> Self {
         Self {
@@ -151,10 +149,16 @@ impl GPIO {
     }
 }
 
+static GPIO_DEVICE_DATA: sync::SafeStaticData<GPIO> = sync::SafeStaticData::new(GPIO::new());
+
+pub fn device() -> &'static mut GPIO {
+    GPIO_DEVICE_DATA.inner()
+}
+
 pub fn build() -> device::DeviceDriver {
     device::DeviceDriver {
         description: "BCM2711 GPIO",
-        descriptor: GPIO_DRIVER.inner(),
+        descriptor: device(),
         phase: device::InitPhase::Hardware,
     }
 }
