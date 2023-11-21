@@ -9,36 +9,27 @@
 // its safety, however considering the scenario we mentioned earlier, no
 // multiple threads/cores, we we're fine to make them "thread-safe".
 
-use core::ops::{Deref, DerefMut};
+use core::cell::UnsafeCell;
 
-pub struct SingleThreadData<T>
+pub struct SafeStaticData<T>
 where
     T: ?Sized,
 {
-    data: T,
+    pub data: UnsafeCell<T>,
 }
 
-impl<T> SingleThreadData<T> {
+impl<T> SafeStaticData<T> {
     pub const fn new(inner: T) -> Self {
-        Self { data: inner }
+        Self {
+            data: UnsafeCell::new(inner),
+        }
+    }
+
+    pub fn inner(&self) -> &mut T {
+        unsafe { &mut *self.data.get() }
     }
 }
 
-// Make SingleThreadData thread-safe to the compiler
-unsafe impl<T> Send for SingleThreadData<T> {}
-unsafe impl<T> Sync for SingleThreadData<T> {}
-
-// Get the inner data when deferring SingleThreadData
-impl<T> Deref for SingleThreadData<T> {
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.data
-    }
-}
-
-impl<T> DerefMut for SingleThreadData<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.data
-    }
-}
+// Make SafeStaticData thread-safe to the compiler
+unsafe impl<T> Send for SafeStaticData<T> {}
+unsafe impl<T> Sync for SafeStaticData<T> {}
