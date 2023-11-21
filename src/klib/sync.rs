@@ -11,14 +11,14 @@
 
 use core::cell::UnsafeCell;
 
-pub struct SingleThreadData<T>
+pub struct SafeStaticData<T>
 where
     T: ?Sized,
 {
     pub data: UnsafeCell<T>,
 }
 
-impl<T> SingleThreadData<T> {
+impl<T> SafeStaticData<T> {
     pub const fn new(inner: T) -> Self {
         Self {
             data: UnsafeCell::new(inner),
@@ -30,6 +30,6 @@ impl<T> SingleThreadData<T> {
     }
 }
 
-// Make SingleThreadData thread-safe to the compiler
-unsafe impl<T> Send for SingleThreadData<T> {}
-unsafe impl<T> Sync for SingleThreadData<T> {}
+// Make SafeStaticData thread-safe to the compiler
+unsafe impl<T> Send for SafeStaticData<T> {}
+unsafe impl<T> Sync for SafeStaticData<T> {}
