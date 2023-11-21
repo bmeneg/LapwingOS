@@ -13,3 +13,6 @@ panic = "abort"
 [dev-dependencies]
 cargo-binutils = "0.3.6"
 rustfilt = "0.2.1"
+
+[dependencies]
+tock-registers = "0.9.0"

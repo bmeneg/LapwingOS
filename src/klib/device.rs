@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::klib::sync::SingleThreadData;
+use crate::klib::sync;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum InitPhase {
@@ -31,8 +31,8 @@ pub struct DriversManager {
     num_registered: usize,
 }
 
-static DRIVERS_MANAGER_ONCE: SingleThreadData<DriversManager> =
-    SingleThreadData::new(DriversManager::new());
+static DRIVERS_MANAGER_ONCE: sync::SafeStaticData<DriversManager> =
+    sync::SafeStaticData::new(DriversManager::new());
 
 impl DriversManager {
     const fn new() -> Self {
