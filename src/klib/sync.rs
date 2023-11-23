@@ -28,10 +28,6 @@ impl<T> SafeStaticData<T> {
     pub fn inner(&self) -> &mut T {
         unsafe { &mut *self.data.get() }
     }
-
-    pub fn set_inner(&self, inner: T) {
-        unsafe { *self.data.get() = inner };
-    }
 }
 
 // Make SafeStaticData thread-safe to the compiler

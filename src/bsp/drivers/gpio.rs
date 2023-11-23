@@ -151,7 +151,7 @@ impl GPIO {
 
 static GPIO_DEVICE_DATA: sync::SafeStaticData<GPIO> = sync::SafeStaticData::new(GPIO::new());
 
-pub fn device() -> &'static mut GPIO {
+pub fn device() -> &'static GPIO {
     GPIO_DEVICE_DATA.inner()
 }
 

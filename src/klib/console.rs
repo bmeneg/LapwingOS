@@ -1,7 +1,9 @@
+#![allow(dead_code)]
+
 // Public trait to be implemented by those device drivers willing to be used
 // as consoles for a certain BSP.
 
-use super::sync;
+use super::sync::SafeStaticData;
 use core::fmt;
 
 // The fmt::Write trait requires write_str() function to be implemented,
@@ -11,21 +13,34 @@ pub trait Console: fmt::Write {
     fn read_char(&self) -> u8;
 }
 
-static SYSTEM_CONSOLE: sync::SafeStaticData<&'static dyn Console> =
-    sync::SafeStaticData::new(&DUMMY_CONSOLE);
-
-pub fn system() -> &'static dyn Console {
-    *SYSTEM_CONSOLE.inner()
+pub struct SystemConsole<'a> {
+    console: &'a SafeStaticData<dyn Console>,
 }
 
-pub fn register_console(console: &'static dyn Console) {
-    SYSTEM_CONSOLE.set_inner(console);
+impl<'a> SystemConsole<'a> {
+    pub fn register(&mut self, console: &'a SafeStaticData<dyn Console>) {
+        self.console = console;
+    }
+
+    pub fn print_fmt(&self, args: fmt::Arguments) {
+        let console: &mut dyn Console;
+        unsafe {
+            console = &mut *self.console.data.get();
+        }
+        fmt::Write::write_fmt(console, args).unwrap();
+    }
 }
 
-// Print macros are built at compile time, thus we need to have a static
-// instance of what gonna be the system console. However, since we need to
-// first initialize the whole BSP hardware we create a dummy_console with
-// void implementation of the required methods.
+static SYSTEM_CONSOLE: SafeStaticData<SystemConsole> = SafeStaticData::new(SystemConsole {
+    console: &DUMMY_CONSOLE,
+});
+
+pub fn system<'a>() -> &'static mut SystemConsole<'a> {
+    SYSTEM_CONSOLE.inner()
+}
+
+// This dummy console is used just to satisfy an empty system console while
+// the peripheric drivers aren't initialized.
 struct DummyConsole;
 
 impl fmt::Write for DummyConsole {
@@ -40,4 +55,4 @@ impl Console for DummyConsole {
     }
 }
 
-static DUMMY_CONSOLE: DummyConsole = DummyConsole {};
+static DUMMY_CONSOLE: SafeStaticData<DummyConsole> = SafeStaticData::new(DummyConsole {});

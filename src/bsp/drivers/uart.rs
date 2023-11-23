@@ -194,7 +194,7 @@ impl console::Console for UART1 {
 }
 
 pub fn build() -> device::DeviceDriver {
-    console::register_console(UART1_DRIVER.inner());
+    console::system().register(&UART1_DRIVER);
     device::DeviceDriver {
         description: "BCM2711 MiniUART",
         descriptor: UART1_DRIVER.inner(),
