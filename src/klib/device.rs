@@ -31,19 +31,12 @@ pub struct DriversManager {
     num_registered: usize,
 }
 
-static DRIVERS_MANAGER_ONCE: sync::SafeStaticData<DriversManager> =
-    sync::SafeStaticData::new(DriversManager::new());
-
 impl DriversManager {
     const fn new() -> Self {
         Self {
             drivers: [None; NUM_DRIVERS],
             num_registered: 0,
         }
-    }
-
-    pub fn instance() -> &'static mut Self {
-        DRIVERS_MANAGER_ONCE.inner()
     }
 
     pub fn register_driver(&mut self, driver: DeviceDriver) {
@@ -92,4 +85,11 @@ impl DriversManager {
             }
         }
     }
+}
+
+static DRIVERS_MANAGER_ONCE: sync::SafeStaticData<DriversManager> =
+    sync::SafeStaticData::new(DriversManager::new());
+
+pub fn manager() -> &'static mut DriversManager {
+    DRIVERS_MANAGER_ONCE.inner()
 }

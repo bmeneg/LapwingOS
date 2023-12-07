@@ -20,8 +20,8 @@ global_asm!(include_str!("arch/boot.s"));
 pub fn _start_kernel() -> ! {
     bsp::drivers::devices_build();
 
-    let drv_manager = klib::device::DriversManager::instance();
-    drv_manager.init_drivers(None);
+    let dev_manager = klib::device::manager();
+    dev_manager.init_drivers(None);
 
     loop {}
 }
